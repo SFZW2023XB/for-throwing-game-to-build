@@ -1,0 +1,271 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:showdetails.ViewModels"
+             xmlns:converters="clr-namespace:showdetails.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="showdetails.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="#1E3A5F">
+  <Design.DataContext>
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+  <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+      <!-- 左侧游戏状态区域 -->
+      <Canvas Grid.Column="0" Height="200" Margin="0,0,20,0">
+        <!-- 玩家标记（带状态的圆形+竖线） -->
+        <Grid Canvas.Left="50" Canvas.Top="85">
+          <Ellipse Width="30" Height="30" 
+                   Fill="{Binding GameState.ItemCount, Converter={x:Static converters:IntegerToColorConverter.Instance}}"
+                   Effect="drop-shadow(0 0 8 #6E6E96)"/>
+          <TextBlock Text="{Binding GameState.ItemCount}" 
+                     HorizontalAlignment="Center" 
+                     VerticalAlignment="Center" 
+                     Foreground="White" 
+                     FontWeight="Bold"/>
+        </Grid>
+        
+        <!-- 标尺和足球位置显示 -->
+        <Grid Canvas.Top="140">
+          <!-- 坐标轴背景 -->
+          <Rectangle Height="60" Width="420" Fill="#FFFFFF" Opacity="0.05" Canvas.Top="-30"/>
+          
+          <!-- 坐标轴标题 -->
+          <TextBlock Canvas.Left="410" Canvas.Top="25" Text="距离 (m)" Foreground="White" FontSize="12" FontFamily="Times New Roman" FontStyle="Italic"/>
+          
+          <!-- 打击范围显示 -->
+          <Rectangle Canvas.Left="{Binding GameState.MinRange}" Height="30" Width="{Binding GameState.MaxRange, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=-50}" Fill="#00FF00" Opacity="0.3" Canvas.Top="-15"/>
+          
+          <!-- 打击范围文字标记 -->
+          <TextBlock Canvas.Left="{Binding GameState.MinRange, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5}" Canvas.Top="-25" Text="打击范围" Foreground="#00FF00" FontSize="10" FontWeight="Bold"/>
+          
+          <!-- 标尺主线 -->
+          <Rectangle Height="1" Width="400" Fill="White"/>
+          
+          <!-- 刻度线和数值 -->
+          <ItemsControl>
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <Canvas/>
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.Items>
+              <!-- 每100单位一个大刻度和数字 -->
+              <Rectangle Canvas.Left="0" Canvas.Top="-6" Width="1" Height="12" Fill="White"/>
+              <TextBlock Canvas.Left="-5" Canvas.Top="10" Text="0" Foreground="White" FontSize="10" FontFamily="Times New Roman"/>
+              
+              <Rectangle Canvas.Left="100" Canvas.Top="-6" Width="1" Height="12" Fill="White"/>
+              <TextBlock Canvas.Left="95" Canvas.Top="10" Text="100" Foreground="White" FontSize="10" FontFamily="Times New Roman"/>
+              
+              <Rectangle Canvas.Left="200" Canvas.Top="-6" Width="1" Height="12" Fill="White"/>
+              <TextBlock Canvas.Left="195" Canvas.Top="10" Text="200" Foreground="White" FontSize="10" FontFamily="Times New Roman"/>
+              
+              <Rectangle Canvas.Left="300" Canvas.Top="-6" Width="1" Height="12" Fill="White"/>
+              <TextBlock Canvas.Left="295" Canvas.Top="10" Text="300" Foreground="White" FontSize="10" FontFamily="Times New Roman"/>
+              
+              <Rectangle Canvas.Left="400" Canvas.Top="-6" Width="1" Height="12" Fill="White"/>
+              <TextBlock Canvas.Left="395" Canvas.Top="10" Text="400" Foreground="White" FontSize="10" FontFamily="Times New Roman"/>
+              
+              <!-- 每50单位一个中等刻度 -->
+              <Rectangle Canvas.Left="50" Canvas.Top="-4" Width="1" Height="8" Fill="White"/>
+              <Rectangle Canvas.Left="150" Canvas.Top="-4" Width="1" Height="8" Fill="White"/>
+              <Rectangle Canvas.Left="250" Canvas.Top="-4" Width="1" Height="8" Fill="White"/>
+              <Rectangle Canvas.Left="350" Canvas.Top="-4" Width="1" Height="8" Fill="White"/>
+              
+              <!-- 每10单位一个小刻度 -->
+              <Rectangle Canvas.Left="10" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="20" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="30" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="40" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="60" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="70" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="80" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="90" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              
+              <Rectangle Canvas.Left="110" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="120" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="130" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="140" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="160" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="170" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="180" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="190" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              
+              <Rectangle Canvas.Left="210" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="220" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="230" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="240" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="260" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="270" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="280" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="290" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              
+              <Rectangle Canvas.Left="310" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="320" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="330" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="340" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="360" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="370" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="380" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              <Rectangle Canvas.Left="390" Canvas.Top="-2" Width="1" Height="4" Fill="White"/>
+              
+              <!-- 网格线（淡色） -->
+              <Rectangle Canvas.Left="100" Canvas.Top="-20" Width="1" Height="40" Fill="White" Opacity="0.2"/>
+              <Rectangle Canvas.Left="200" Canvas.Top="-20" Width="1" Height="40" Fill="White" Opacity="0.2"/>
+              <Rectangle Canvas.Left="300" Canvas.Top="-20" Width="1" Height="40" Fill="White" Opacity="0.2"/>
+              
+              <!-- 打击范围边界标记 -->
+              <Rectangle Canvas.Left="{Binding GameState.MinRange}" Canvas.Top="-15" Width="1" Height="30" Fill="#00FF00" Opacity="0.8"/>
+              <Rectangle Canvas.Left="{Binding GameState.MaxRange}" Canvas.Top="-15" Width="1" Height="30" Fill="#00FF00" Opacity="0.8"/>
+              <TextBlock Canvas.Left="{Binding GameState.MinRange, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=-10}" Canvas.Top="-30" Text="{Binding GameState.MinRange}" Foreground="#00FF00" FontSize="9"/>
+              <TextBlock Canvas.Left="{Binding GameState.MaxRange, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=-10}" Canvas.Top="-30" Text="{Binding GameState.MaxRange}" Foreground="#00FF00" FontSize="9"/>
+            </ItemsControl.Items>
+          </ItemsControl>
+          
+          <!-- 足球位置标记 -->
+          <!-- 足球显示 -->
+          <Canvas>
+            <Ellipse Canvas.Left="{Binding GameState.Ball.PositionX}" 
+                     Canvas.Top="-10"
+                     Width="10" Height="10" 
+                     Fill="#FF5555"/>
+            <Line StartPoint="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},0" 
+                  EndPoint="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},-15" 
+                  Stroke="#FF5555" 
+                  StrokeThickness="1" 
+                  StrokeDashArray="2,2"/>
+            
+            <!-- 坐标显示 -->
+            <StackPanel Canvas.Left="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
+                      Canvas.Top="-40"
+                      Orientation="Vertical">
+              <TextBlock Text="{Binding GameState.Ball.PositionX, StringFormat={}X: {0:F1}}"
+                       Foreground="#FF5555"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+              <TextBlock Text="{Binding GameState.Ball.PositionY, StringFormat={}Y: {0:F1}}"
+                       Foreground="#FF5555"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+              <TextBlock Text="{Binding GameState.Ball.PositionZ, StringFormat={}Z: {0:F1}}"
+                       Foreground="#FF5555"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+            </StackPanel>
+          </Canvas>
+          
+          <!-- 石头显示 -->
+          <Canvas>
+            <Rectangle Canvas.Left="{Binding GameState.Stone.PositionX}" 
+                       Canvas.Top="-8"
+                       Width="8" Height="8" 
+                       Fill="#AAAAAA"/>
+            <Line StartPoint="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},0" 
+                  EndPoint="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},-15" 
+                  Stroke="#AAAAAA" 
+                  StrokeThickness="1" 
+                  StrokeDashArray="2,2"/>
+            
+            <!-- 石头坐标显示 -->
+            <StackPanel Canvas.Left="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
+                      Canvas.Top="-70"
+                      Orientation="Vertical">
+              <!-- 删除石头数量显示 -->
+              <TextBlock Text="{Binding GameState.Stone.PositionX, StringFormat={}X: {0:F1}}"
+                       Foreground="#AAAAAA"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+              <TextBlock Text="{Binding GameState.Stone.PositionY, StringFormat={}Y: {0:F1}}"
+                       Foreground="#AAAAAA"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+              <TextBlock Text="{Binding GameState.Stone.PositionZ, StringFormat={}Z: {0:F1}}"
+                       Foreground="#AAAAAA"
+                       FontSize="10"
+                       FontFamily="Consolas"/>
+            </StackPanel>
+          </Canvas>
+        </Grid>
+      </Canvas>
+
+      <!-- 右侧状态指示灯 -->
+      <ItemsControl Grid.Column="1" ItemsSource="{Binding StatusLights}" HorizontalAlignment="Right" VerticalAlignment="Top">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Orientation="Horizontal"/>
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Width="80" Height="40" Margin="3"
+                    Background="{Binding IsActive, Converter={x:Static converters:BooleanToColorConverter.Instance}}"
+                    CornerRadius="4">
+              <TextBlock Text="{Binding Text}"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center"
+                         FontWeight="Bold"
+                         FontSize="14"
+                         FontFamily="Microsoft YaHei UI"
+                         Foreground="White"
+                         TextWrapping="NoWrap"/>
+              <Border.Styles>
+                <Style Selector="Border">
+                  <Setter Property="BoxShadow" Value="0 0 10 2 #80000000"/>
+                </Style>
+              </Border.Styles>
+              <ToolTip.Tip>
+                <Border Background="#333333" Padding="8" CornerRadius="4">
+                  <TextBlock Text="{Binding Description}" Foreground="White"/>
+                </Border>
+              </ToolTip.Tip>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Grid>
+    
+    <!-- 底部按钮 -->
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,30,0,0" Spacing="20">
+        <Border CornerRadius="4" Background="#2D2D2D">
+          <Button Content="测试状态1" Command="{Binding TestStatus}" CommandParameter="1"
+                  Classes="Primary"
+                  Width="120" Height="40"
+                  FontSize="14"
+                  FontWeight="Bold"/>
+        </Border>
+        <Border CornerRadius="4" Background="#2D2D2D">
+          <Button Content="测试状态3" Command="{Binding TestStatus}" CommandParameter="3"
+                  Classes="Primary"
+                  Width="120" Height="40"
+                  FontSize="14"
+                  FontWeight="Bold"/>
+        </Border>
+        <Border CornerRadius="4" Background="#2D2D2D">
+          <Button Content="测试状态6" Command="{Binding TestStatus}" CommandParameter="6"
+                  Classes="Primary"
+                  Width="120" Height="40"
+                  FontSize="14"
+                  FontWeight="Bold"/>
+        </Border>
+    </StackPanel>
+  </Grid>
+
+  <UserControl.Styles>
+    <Style Selector="Button.Primary">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="Padding" Value="15,10"/>
+      <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+    <Style Selector="Button.Primary:pointerover">
+      <Setter Property="Background" Value="#3D3D3D"/>
+    </Style>
+    <Style Selector="Button.Primary:pressed">
+      <Setter Property="Background" Value="#1D1D1D"/>
+    </Style>
+  </UserControl.Styles>
+</UserControl>

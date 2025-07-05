@@ -1,0 +1,31 @@
+// GameState.fbs
+
+namespace showdetails.Models;
+
+table Vec3 {
+  x:double;
+  y:double;
+  z:double;
+}
+
+table Ball {
+  position:Vec3;
+  is_in_range:bool;
+}
+
+table Stone {
+  position:Vec3;
+}
+
+table GameState {
+  item_count:int;
+  target_position:Vec3;
+  is_target_in_range:bool;
+  min_range:double;
+  max_range:double;
+  ball:Ball;
+  stone:Stone;
+  stone_count:int;
+}
+
+root_type GameState;
