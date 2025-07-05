@@ -7,6 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="showdetails.Views.MainView"
              x:DataType="vm:MainViewModel"
+             xmlns:models="clr-namespace:showdetails.Models"
              Background="#1E3A5F">
   <Design.DataContext>
     <vm:MainViewModel />
@@ -16,12 +17,12 @@
     <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
       <!-- 左侧游戏状态区域 -->
       <Canvas Grid.Column="0" Height="200" Margin="0,0,20,0">
-        <!-- 玩家标记（带状态的圆形+竖线） -->
+        <!-- 石头数量显示（圆形） -->
         <Grid Canvas.Left="50" Canvas.Top="85">
           <Ellipse Width="30" Height="30" 
-                   Fill="{Binding GameState.ItemCount, Converter={x:Static converters:IntegerToColorConverter.Instance}}"
+                   Fill="{Binding GameState.StoneCount, Converter={x:Static converters:IntegerToColorConverter.Instance}}"
                    Effect="drop-shadow(0 0 8 #6E6E96)"/>
-          <TextBlock Text="{Binding GameState.ItemCount}" 
+          <TextBlock Text="{Binding GameState.StoneCount}" 
                      HorizontalAlignment="Center" 
                      VerticalAlignment="Center" 
                      Foreground="White" 
@@ -127,30 +128,30 @@
           
           <!-- 足球位置标记 -->
           <!-- 足球显示 -->
-          <Canvas>
-            <Ellipse Canvas.Left="{Binding GameState.Ball.PositionX}" 
+          <Canvas IsVisible="{Binding GameState.Ball, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Ellipse Canvas.Left="{Binding GameState.Ball.Value.Position.Value.X}" 
                      Canvas.Top="-10"
                      Width="10" Height="10" 
                      Fill="#FF5555"/>
-            <Line StartPoint="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},0" 
-                  EndPoint="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},-15" 
+            <Line StartPoint="{Binding GameState.Ball.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},0" 
+                  EndPoint="{Binding GameState.Ball.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=5},-15" 
                   Stroke="#FF5555" 
                   StrokeThickness="1" 
                   StrokeDashArray="2,2"/>
             
             <!-- 坐标显示 -->
-            <StackPanel Canvas.Left="{Binding GameState.Ball.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
+            <StackPanel Canvas.Left="{Binding GameState.Ball.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
                       Canvas.Top="-40"
                       Orientation="Vertical">
-              <TextBlock Text="{Binding GameState.Ball.PositionX, StringFormat={}X: {0:F1}}"
+              <TextBlock Text="{Binding GameState.Ball.Value.Position.Value.X, StringFormat={}X: {0:F1}}"
                        Foreground="#FF5555"
                        FontSize="10"
                        FontFamily="Consolas"/>
-              <TextBlock Text="{Binding GameState.Ball.PositionY, StringFormat={}Y: {0:F1}}"
+              <TextBlock Text="{Binding GameState.Ball.Value.Position.Value.Y, StringFormat={}Y: {0:F1}}"
                        Foreground="#FF5555"
                        FontSize="10"
                        FontFamily="Consolas"/>
-              <TextBlock Text="{Binding GameState.Ball.PositionZ, StringFormat={}Z: {0:F1}}"
+              <TextBlock Text="{Binding GameState.Ball.Value.Position.Value.Z, StringFormat={}Z: {0:F1}}"
                        Foreground="#FF5555"
                        FontSize="10"
                        FontFamily="Consolas"/>
@@ -158,31 +159,30 @@
           </Canvas>
           
           <!-- 石头显示 -->
-          <Canvas>
-            <Rectangle Canvas.Left="{Binding GameState.Stone.PositionX}" 
+          <Canvas IsVisible="{Binding GameState.Stone, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <Rectangle Canvas.Left="{Binding GameState.Stone.Value.Position.Value.X}" 
                        Canvas.Top="-8"
                        Width="8" Height="8" 
                        Fill="#AAAAAA"/>
-            <Line StartPoint="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},0" 
-                  EndPoint="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},-15" 
+            <Line StartPoint="{Binding GameState.Stone.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},0" 
+                  EndPoint="{Binding GameState.Stone.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=4},-15" 
                   Stroke="#AAAAAA" 
                   StrokeThickness="1" 
                   StrokeDashArray="2,2"/>
             
             <!-- 石头坐标显示 -->
-            <StackPanel Canvas.Left="{Binding GameState.Stone.PositionX, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
-                      Canvas.Top="-70"
-                      Orientation="Vertical">
-              <!-- 删除石头数量显示 -->
-              <TextBlock Text="{Binding GameState.Stone.PositionX, StringFormat={}X: {0:F1}}"
+              <StackPanel Canvas.Left="{Binding GameState.Stone.Value.Position.Value.X, Converter={x:Static converters:AddOffsetConverter.Instance}, ConverterParameter=10}" 
+                        Canvas.Top="-70"
+                        Orientation="Vertical">
+                <TextBlock Text="{Binding GameState.Stone.Value.Position.Value.X, StringFormat={}X: {0:F1}}"
                        Foreground="#AAAAAA"
                        FontSize="10"
                        FontFamily="Consolas"/>
-              <TextBlock Text="{Binding GameState.Stone.PositionY, StringFormat={}Y: {0:F1}}"
+              <TextBlock Text="{Binding GameState.Stone.Value.Position.Value.Y, StringFormat={}Y: {0:F1}}"
                        Foreground="#AAAAAA"
                        FontSize="10"
                        FontFamily="Consolas"/>
-              <TextBlock Text="{Binding GameState.Stone.PositionZ, StringFormat={}Z: {0:F1}}"
+              <TextBlock Text="{Binding GameState.Stone.Value.Position.Value.Z, StringFormat={}Z: {0:F1}}"
                        Foreground="#AAAAAA"
                        FontSize="10"
                        FontFamily="Consolas"/>

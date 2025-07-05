@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
-using FlatBuffers;
+using Google.FlatBuffers;
 using showdetails.Models;
 using System.Threading;
 
@@ -22,11 +22,13 @@ class Program
     private static Random random = new Random();          // 随机数生成器
 
     // 石头模拟参数
-    // 石头模拟参数
     private static double stoneX = 0;                    // 初始X坐标
     private static double stoneY = 0;                    // 初始Y坐标
     private static double stoneZ = 0;                    // 初始Z坐标
     private static int stoneCount = 5;                   // 石头数量
+    
+    // 状态指示灯参数
+    private static int statusValue = 0;                  // 状态值（0-6）
 
     static void Main(string[] args)
     {
@@ -42,19 +44,30 @@ class Program
                 // 设置TTL（生存时间）
                 udpClient.Ttl = 1;
                 
-                int currentStatus = 0;
                 int messageCount = 0;
-                
+
+                // 在循环外定义变量
+                bool isBallInRange = false;
+                double targetX = 100;
+                double targetY = 50;
+                double targetZ = 25;
+                bool isTargetInRange = true;
+                double minRange = 10.0;
+                double maxRange = 100.0;
+
                 while (true)
                 {
                     try
                     {
                         // 更新足球位置
                         UpdateBallPosition();
-                        
+
+                        // 创建FlatBuffer
                         var builder = new FlatBufferBuilder(1024);
 
                         var ballPosition = Vec3.CreateVec3(builder, ballX, ballY, ballZ);
+                        // 随机更新 isBallInRange
+                        isBallInRange = random.NextDouble() > 0.5;
                         var ball = Ball.CreateBall(builder, ballPosition, isBallInRange);
 
                         var stonePosition = Vec3.CreateVec3(builder, stoneX, stoneY, stoneZ);
@@ -62,30 +75,37 @@ class Program
 
                         var targetPosition = Vec3.CreateVec3(builder, targetX, targetY, targetZ);
 
+                        // 创建GameState
                         GameState.StartGameState(builder);
-                        GameState.AddItemCount(builder, itemCount);
+                        GameState.AddItemCount(builder, statusValue); // 使用statusValue作为状态指示灯的值
                         GameState.AddTargetPosition(builder, targetPosition);
                         GameState.AddIsTargetInRange(builder, isTargetInRange);
                         GameState.AddMinRange(builder, minRange);
                         GameState.AddMaxRange(builder, maxRange);
                         GameState.AddBall(builder, ball);
                         GameState.AddStone(builder, stone);
-                        GameState.AddStoneCount(builder, stoneCount);
+                        GameState.AddStoneCount(builder, stoneCount); // 使用stoneCount作为石头数量
                         var gameStateOffset = GameState.EndGameState(builder);
 
                         builder.Finish(gameStateOffset.Value);
 
                         byte[] bytes = builder.SizedByteArray();
-                        
+
                         // 发送数据到组播地址
                         udpClient.Send(bytes, bytes.Length, MULTICAST_ADDRESS, PORT);
-                        
+
                         // 打印发送的数据
                         messageCount++;
-                        Console.WriteLine($"[{messageCount}] 已发送: {jsonString}");
+                        Console.WriteLine($"[{messageCount}] 已发送 GameState 数据，字节长度: {bytes.Length}，球位置: ({ballX:F1}, {ballY:F1}, {ballZ:F1}), 石头位置: ({stoneX:F1}, {stoneY:F1}, {stoneZ:F1}), 石头数量: {stoneCount}, 状态值: {statusValue}");
+
+                        // 更新状态值，循环0-6
+                        statusValue = (statusValue + 1) % 7;
                         
-                        // 更新状态值（0-6循环）
-                        currentStatus = (currentStatus + 1) % 7;
+                        // 随机更新石头数量（1-10之间）
+                        if (random.NextDouble() < 0.3) // 30%的概率改变石头数量
+                        {
+                            stoneCount = random.Next(1, 11);
+                        }
                         
                         // 等待指定时间
                         Thread.Sleep(INTERVAL_MS);

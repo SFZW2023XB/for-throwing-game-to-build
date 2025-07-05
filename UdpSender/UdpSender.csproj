@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\showdetails\showdetails.csproj" />
+    <PackageReference Include="Google.FlatBuffers" Version="24.3.25" />
+  </ItemGroup>
+
 </Project>

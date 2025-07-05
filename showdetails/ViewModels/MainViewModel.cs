@@ -1,7 +1,7 @@
 using System;
 using System.Net.Sockets;
 using System.Net;
-using FlatBuffers;
+using Google.FlatBuffers;
 using showdetails.Models;
 using ReactiveUI;
 using System.Reactive;
@@ -19,41 +19,31 @@ public class MainViewModel : ViewModelBase
     private UdpClient? udpClient;
     private const string MULTICAST_ADDRESS = "239.0.0.1"; // 组播地址
     private const int PORT = 12345;
-    private GameState _gameState; // 添加 GameState 字段
+    private showdetails.Models.GameState _gameState; // 添加 GameState 字段
 
     public ICommand TestStatus { get; }
 
-    public GameState GameState // 添加 GameState 属性
+    public showdetails.Models.GameState GameState // 添加 GameState 属性
     {
         get => _gameState;
         private set => this.RaiseAndSetIfChanged(ref _gameState, value);
     }
 
+
     public MainViewModel()
     {
-        _gameState = new GameState // 初始化 GameState
-        {
-            ItemCount = 0,
-            MinRange = 50,
-            MaxRange = 150,
-            TargetPositionX = 200,
-            TargetPositionY = 0,
-            TargetPositionZ = 0,
-            Ball = new Ball
-            {
-                PositionX = 200,
-                PositionY = 0,
-                PositionZ = 0
-            },
-            Stone = new Stone
-            {
-                PositionX = 0,
-                PositionY = 0,
-                PositionZ = 0
-            },
-            StoneCount = 5
-        };
+        // 初始化一个默认的游戏状态，让“点迹”在启动时可见
+        var builder = new FlatBufferBuilder(1);
+        var position = Vec3.CreateVec3(builder, 50, 0, 0); // 默认位置 X=50
+        var ball = Ball.CreateBall(builder, position);
 
+        GameState.StartGameState(builder);
+        GameState.AddBall(builder, ball);
+        var gameStateOffset = GameState.EndGameState(builder);
+        builder.Finish(gameStateOffset.Value);
+
+        var buffer = builder.SizedByteArray();
+        _gameState = GameState.GetRootAsGameState(new ByteBuffer(buffer));
         _statusLights = new ObservableCollection<StatusLight>
         {
             new StatusLight { Text = "正常", Description = "系统运行正常" },
@@ -99,35 +89,21 @@ public class MainViewModel : ViewModelBase
                 while (true)
                 {
                     var result = await udpClient.ReceiveAsync();
-                    var byteBuffer = new ByteBuffer(result.Buffer);
-                    var gameState = GameState.GetRootAsGameState(byteBuffer);
+                    var buffer = result.Buffer;
+                    var byteBuffer = new ByteBuffer(buffer);
+                    //var veryfy = GameState.VerifyGameState(new Google.FlatBuffers.ByteBuffer(data));
+                    //if (!veryfy)
+                    //{
+                    //    return;
+                    //}
+                    var gameState = showdetails.Models.GameState.GetRootAsGameState(byteBuffer);
 
-                    GameState.ItemCount = gameState.ItemCount;
-                    GameState.TargetPositionX = gameState.TargetPosition.Value.X;
-                    GameState.TargetPositionY = gameState.TargetPosition.Value.Y;
-                    GameState.TargetPositionZ = gameState.TargetPosition.Value.Z;
-                    GameState.MinRange = gameState.MinRange;
-                    GameState.MaxRange = gameState.MaxRange;
-
-                    var ball = new Ball
+                    Dispatcher.UIThread.Post(() =>
                     {
-                        PositionX = gameState.Ball.Value.Position.Value.X,
-                        PositionY = gameState.Ball.Value.Position.Value.Y,
-                        PositionZ = gameState.Ball.Value.Position.Value.Z,
-                        IsInRange = gameState.Ball.Value.IsInRange
-                    };
-                    GameState.Ball = ball;
-
-                    var stone = new Stone
-                    {
-                        PositionX = gameState.Stone.Value.Position.Value.X,
-                        PositionY = gameState.Stone.Value.Position.Value.Y,
-                        PositionZ = gameState.Stone.Value.Position.Value.Z
-                    };
-                    GameState.Stone = stone;
-
-                    GameState.StoneCount = gameState.StoneCount;
-                    }
+                        GameState = gameState;
+                        // 从接收到的GameState中获取状态值并更新状态指示灯
+                        UpdateStatus(gameState.ItemCount);
+                    });
                 }
             }
             catch (SocketException ex)
